@@ -120,10 +120,10 @@ export interface SiteConfig {
 }
 
 const siteConfig: SiteConfig = {
-  name: 'Astro Rocket',
+  name: 'Kyangso',
   description:
-    'Astro Rocket — A production-ready Astro 6 starter with 12 beautiful themes, 57+ components, built-in i18n, dark mode and a fast, modern foundation to build anything on.',
-  url: SITE_URL || 'https://astrorocket.dev',
+    'Kyangso site',
+  url: SITE_URL || 'https://kyangso.github.io/',
   ogImage: '/og-default.svg',
   author: 'Hans Martens',
   email: 'hello@hansmartens.dev',
@@ -132,17 +132,14 @@ const siteConfig: SiteConfig = {
     city: 'Veghel',
     state: '',
     zip: '',
-    country: 'the Netherlands',
+    country: 'Republic of korea',
   },
   socialLinks: [
-    'https://github.com/hansmartensdev',
-    'https://x.com/hansmartens_dev',
-    'https://www.linkedin.com',
-    'https://bsky.app/profile/hansmartensdev.bsky.social',
+    'https://github.com/kyangso',
   ],
   twitter: {
-    site: 'https://x.com/hansmartens_dev',
-    creator: '@hansmartens_dev',
+    site: '',
+    creator: '@',
   },
   verification: {
     google: GOOGLE_SITE_VERIFICATION,
@@ -179,7 +176,7 @@ const siteConfig: SiteConfig = {
   i18n: i18nConfig,
   branding: {
     logo: {
-      alt: 'Astro Rocket',
+      alt: 'Kyangso',
       imageUrl: '/favicon.svg',
     },
     favicon: {
