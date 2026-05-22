@@ -25,13 +25,13 @@ const projects = items.sort((a, b) => a.data.order - b.data.order);
   <Hero layout="centered" size="sm">
     <Badge slot="badge" variant="brand" pill>
       <Icon name="layers" size="sm" />
-      Selected work
+      Projects
     </Badge>
 
     <h1 slot="title">Projects</h1>
 
     <p slot="description">
-      Work I'm most proud of.
+      All projects
     </p>
   </Hero>
 
@@ -39,8 +39,17 @@ const projects = items.sort((a, b) => a.data.order - b.data.order);
   {projects.length > 0 && (
     <section class="py-[var(--space-section-md)] bg-background-secondary border-t border-border">
       <div class="mx-auto max-w-6xl px-6 flex flex-col gap-8">
+        <div class="flex flex-col items-center gap-4 text-center" data-reveal>
+          <div class="flex flex-col items-center gap-6">
+            <Badge variant="brand" pill>All Projects</Badge>
+            <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground">
+              Projects
+            </h2>
+          </div>
+        </div>
 
         <div class="grid gap-6 md:grid-cols-2">
+          {/* Project cards hidden
           {projects.map((project) => (
             <Card variant="elevated" hover padding="none" href={`/projects/${project.id.replace(/\.mdx?$/, '')}`} class:list={['group overflow-hidden flex flex-col', project.data.featured && 'md:col-span-2 md:grid md:grid-cols-2 md:flex-row']} data-reveal>
               {project.data.image && (
@@ -59,7 +68,6 @@ const projects = items.sort((a, b) => a.data.order - b.data.order);
                 </div>
               )}
               <div class="flex flex-1 flex-col p-6">
-                <!-- Header -->
                 <div class="mb-3 flex items-start justify-between gap-4">
                   {!project.data.image && (
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
@@ -69,7 +77,6 @@ const projects = items.sort((a, b) => a.data.order - b.data.order);
                   <Icon name="arrow-up-right" size="sm" class="text-foreground-muted group-hover:text-brand-500 transition-colors shrink-0 ml-auto" />
                 </div>
 
-                <!-- Title + year -->
                 <div class="mb-2 flex items-baseline gap-2">
                   <h3 class="font-display text-lg font-bold text-foreground">{project.data.title}</h3>
                   {project.data.year && (
@@ -79,7 +86,6 @@ const projects = items.sort((a, b) => a.data.order - b.data.order);
 
                 <p class="text-sm text-foreground-muted leading-relaxed mb-4 flex-1">{project.data.description}</p>
 
-                <!-- Tags -->
                 <div class="flex flex-wrap gap-1.5">
                   {project.data.tags.map((tag) => (
                     <Badge variant="brand">{tag}</Badge>
@@ -88,12 +94,14 @@ const projects = items.sort((a, b) => a.data.order - b.data.order);
               </div>
             </Card>
           ))}
+          */}
         </div>
       </div>
     </section>
   )}
 
- <!-- CTA -->
+
+  {/*
   <section class="relative z-10 py-[var(--space-section-md)] bg-background">
     <!-- Mobile: flat section, no card -->
     <div class="glitch:hidden mx-auto max-w-2xl px-6 text-center" data-reveal>
@@ -136,4 +144,5 @@ const projects = items.sort((a, b) => a.data.order - b.data.order);
       </div>
     </LetterGlitchBand>
   </section>
+  */}
 </PageLayout>

@@ -63,57 +63,42 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
     <div class="mx-auto max-w-6xl px-6 flex flex-col gap-8">
       <div class="flex flex-col items-center gap-4 text-center" data-reveal>
         <div class="flex flex-col items-center gap-6">
-          <Badge variant="brand" pill>Services</Badge>
+          <Badge variant="brand" pill>Possibility</Badge>
           <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground">
             What I do
           </h2>
         </div>
         <p class="text-lg text-foreground-muted max-w-2xl mx-auto">
-          From concept to launch.
+          <!-- From concept to launch. -->
         </p>
       </div>
 
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <!-- Web Design -->
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- SW -->
         <Card hover data-reveal>
-          <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-              <Icon name="layout" size="sm" />
-            </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="text-base font-semibold text-foreground">Web Design</h3>
-              <p class="text-sm text-foreground-muted leading-relaxed mt-1.5">
-                Clean, modern interfaces that look great on every screen. Focused on clarity, usability, and your brand identity.
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <!-- Web Development -->
-        <Card hover data-reveal data-reveal-delay="1">
           <div class="flex items-start gap-4">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
               <Icon name="code" size="sm" />
             </div>
             <div class="flex-1 min-w-0">
-              <h3 class="text-base font-semibold text-foreground">Web Development</h3>
+              <h3 class="text-base font-semibold text-foreground">SW</h3>
               <p class="text-sm text-foreground-muted leading-relaxed mt-1.5">
-                Fast, accessible websites built with modern tooling. Astro, Tailwind, and best-practice architecture from day one.
+                Python, Roblox Studio, Vibe coding
               </p>
             </div>
           </div>
         </Card>
 
-        <!-- Performance -->
-        <Card hover data-reveal data-reveal-delay="2">
+        <!-- HW -->
+        <Card hover data-reveal data-reveal-delay="1">
           <div class="flex items-start gap-4">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 flex items-center justify-center text-brand-500 shrink-0">
-              <Icon name="zap" size="sm" />
+              <Icon name="cpu" size="sm" />
             </div>
             <div class="flex-1 min-w-0">
-              <h3 class="text-base font-semibold text-foreground">Performance Optimization</h3>
+              <h3 class="text-base font-semibold text-foreground">HW</h3>
               <p class="text-sm text-foreground-muted leading-relaxed mt-1.5">
-                Core Web Vitals, SEO, and page speed — built in from the start, not bolted on at the end.
+                Raspberry Pi
               </p>
             </div>
           </div>
@@ -127,17 +112,18 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
     <div class="mx-auto max-w-6xl px-6 flex flex-col gap-8">
       <div class="flex flex-col items-center gap-4 text-center" data-reveal>
         <div class="flex flex-col items-center gap-6">
-          <Badge variant="brand" pill>Selected work</Badge>
+          <Badge variant="brand" pill>Projects</Badge>
           <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground">
-            Projects I've built
+            Projects
           </h2>
         </div>
         <p class="text-lg text-foreground-muted max-w-2xl mx-auto">
-          A selection of recent work.
+          View my recent projects
         </p>
       </div>
 
       <div class="grid gap-6 md:grid-cols-2">
+        {/* Project cards hidden
         {featuredProjects.map((project) => (
           <Card variant="elevated" hover padding="lg" href={`/projects/${project.id.replace(/\.mdx?$/, '')}`} class="group flex flex-col" data-reveal>
             <div class="flex flex-1 flex-col">
@@ -162,6 +148,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
             </div>
           </Card>
         ))}
+        */}
       </div>
 
       <div class="flex justify-center">
