@@ -1,0 +1,5 @@
+
+html,body{margin:0;background:#000;overflow:hidden}
+#game{width:100vw;height:100vh;display:block;image-rendering:pixelated}
+#finish{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.8);color:#fff}
+.hidden{display:none!important}
