@@ -123,7 +123,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
       </div>
 
       <div class="grid gap-6 md:grid-cols-2">
-        {/* Project cards hidden
         {featuredProjects.map((project) => (
           <Card variant="elevated" hover padding="lg" href={`/projects/${project.id.replace(/\.mdx?$/, '')}`} class="group flex flex-col" data-reveal>
             <div class="flex flex-1 flex-col">
@@ -148,7 +147,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
             </div>
           </Card>
         ))}
-        */}
+
       </div>
 
       <div class="flex justify-center">
