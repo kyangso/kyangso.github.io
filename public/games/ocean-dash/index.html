@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ocean Dash Deluxe v2</title>
+<style>
+body{margin:0;background:#001b33;display:flex;justify-content:center;align-items:center;height:100vh}
+canvas{background:#0d6efd;border-radius:18px;box-shadow:0 0 35px rgba(0,0,0,.45)}
+</style>
+</head>
+<body>
+<canvas id="game" width="900" height="550"></canvas>
+<script>
+const c = document.getElementById("game");
+const x = c.getContext("2d");
+const keys = {};
+let scene="menu", gameOver=false;
+
+onkeydown=e=>{
+  keys[e.key.toLowerCase()]=true;
+  if(scene==="menu"){
+    if(e.key==="Enter") scene="play";
+    if(e.key.toLowerCase()==="h") scene="help";
+  }else if(scene==="help" && e.key==="Escape"){
+    scene="menu";
+  }
+  if(gameOver && e.key==="Enter") location.reload();
+};
+onkeyup=e=>keys[e.key.toLowerCase()]=false;
+
+const p={x:200,y:275,vx:0,vy:0,angle:0,hp:5,boost:100,score:0,mouth:0};
+let cam=0;
+let distance = 0;
+
+const crabs = Array.from({ length: 10 }, () => ({
+  x: 2500 + Math.random() * 3000,
+  y: 470
+}));
+
+const squids = Array.from({ length: 8 }, () => ({
+  x: 9500 + Math.random() * 4000,
+  y: 150 + Math.random() * 250
+}));
+
+function getBiome() {
+  if (distance < 2000) return 0;      // 얕은 바다
+  if (distance < 5000) return 1;      // 산호초
+  if (distance < 9000) return 2;      // 동굴
+  if (distance < 14000) return 3;     // 열수 분출공
+  return 4;                           // 심연
+}
+
+// 거품(기존 느낌 유지)
+const bubbles=Array.from({length:60},()=>({
+  x:Math.random()*900,
+  y:Math.random()*550,
+  s:1+Math.random()*2.5
+}));
+
+// 자연스러운 물고기 떼
+const school = Array.from({length:18},(_,i)=>({
+  x:700+i*18,
+  y:250,
+  vx:0,
+  vy:0
+}));
+
+// 고퀄 해파리
+const jelly = Array.from({length:10},()=>({
+  x:1000+Math.random()*2500,
+  y:120+Math.random()*280,
+  t:Math.random()*6.28
+}));
+
+function dist(ax,ay,bx,by){
+  return Math.hypot(ax-bx,ay-by);
+}
+
+function updateSchool(){
+  const leader = school[0];
+  leader.vx += (1.7 - leader.vx) * 0.02;
+  leader.vy += (Math.sin(performance.now()/700) * 0.6 - leader.vy) * 0.03;
+
+  leader.x += leader.vx;
+  leader.y += leader.vy;
+
+  for(let i=1;i<school.length;i++){
+    const f = school[i];
+    const prev = school[i-1];
+
+    const tx = prev.x - 22;
+    const ty = prev.y;
+
+    f.vx += (tx - f.x) * 0.015;
+    f.vy += (ty - f.y) * 0.015;
+
+    f.vx *= 0.92;
+    f.vy *= 0.92;
+
+    f.x += f.vx;
+    f.y += f.vy;
+  }
+}
+
+function drawWhale(px,py,a){
+  x.save();
+  x.translate(px,py);
+  x.rotate(a);
+
+  const g=x.createLinearGradient(-50,-40,50,40);
+  g.addColorStop(0,"#9ce8ff");
+  g.addColorStop(.55,"#5bc2ff");
+  g.addColorStop(1,"#2d8cff");
+
+  x.fillStyle=g;
+  x.beginPath();
+  x.ellipse(0,0,60,40,0,0,Math.PI*2);
+  x.fill();
+
+  x.fillStyle="#fff";
+  x.beginPath();
+  x.ellipse(12,18,34,15,0,0,Math.PI*2);
+  x.fill();
+
+  x.fillStyle="#50a7ff";
+  x.beginPath();
+  x.moveTo(-8,-20);
+  x.lineTo(8,-55);
+  x.lineTo(22,-18);
+  x.closePath();
+  x.fill();
+
+  x.beginPath();
+  x.moveTo(-55,0);
+  x.lineTo(-92,-24);
+  x.lineTo(-92,24);
+  x.closePath();
+  x.fill();
+
+  x.strokeStyle="rgba(255,255,255,.6)";
+  x.lineWidth=5;
+  x.beginPath();
+  x.arc(8,-12,26,3.4,5.2);
+  x.stroke();
+
+  x.fillStyle="white";
+  x.beginPath();
+  x.arc(28,-10,12,0,Math.PI*2);
+  x.fill();
+
+  x.fillStyle="#111";
+  x.beginPath();
+  x.arc(31,-10,5,0,Math.PI*2);
+  x.fill();
+
+  const mouth=Math.sin(p.mouth)*3;
+  x.strokeStyle="#204070";
+  x.lineWidth=3;
+  x.beginPath();
+  x.arc(22,15,12,-0.2,0.55+mouth/20);
+  x.stroke();
+
+  x.restore();
+}
+
+function drawMenu(){
+  const g=x.createLinearGradient(0,0,0,550);
+  g.addColorStop(0,"#47d8ff");
+  g.addColorStop(1,"#003f72");
+  x.fillStyle=g;
+  x.fillRect(0,0,900,550);
+  drawWhale(450,210,0);
+  x.fillStyle="#fff";
+  x.textAlign="center";
+  x.font="bold 56px Arial";
+  x.fillText("OCEAN DASH",450,110);
+  x.font="30px Arial";
+  x.fillText("ENTER : 게임시작",450,380);
+  x.fillText("H : 게임방법",450,430);
+  x.textAlign="left";
+}
+
+function drawHelp(){
+  x.fillStyle="#022b4a";
+  x.fillRect(0,0,900,550);
+  x.fillStyle="#fff";
+  x.font="40px Arial";
+  x.fillText("게임방법",60,90);
+  x.font="26px Arial";
+  x.fillText("WASD / 방향키 : 이동",60,170);
+  x.fillText("SPACE : 부스트",60,220);
+  x.fillText("ESC : 메뉴로",60,350);
+}
+
+function loop(){
+  requestAnimationFrame(loop);
+
+  if(scene==="menu"){drawMenu();return;}
+  if(scene==="help"){drawHelp();return;}
+
+  if(!gameOver){
+    if(keys.w||keys.arrowup) p.vy-=.35;
+    if(keys.s||keys.arrowdown) p.vy+=.35;
+    if(keys.a||keys.arrowleft) p.vx-=.35;
+    if(keys.d||keys.arrowright) p.vx+=.35;
+    distance += Math.abs(p.vx) * 0.8;
+
+    if(keys[" "]&&p.boost>0){
+      p.vx*=1.03;p.vy*=1.03;p.boost-=.6;
+    }else{
+      p.boost=Math.min(100,p.boost+.25);
+    }
+
+    p.vx*=.96;
+    p.vy*=.96;
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.y=Math.max(60,Math.min(500,p.y));
+
+    if(Math.abs(p.vx)>.1||Math.abs(p.vy)>.1){
+      p.angle=Math.atan2(p.vy,p.vx);
+    }
+
+    cam+=(p.x-250-cam)*.08;
+    updateSchool();
+  }
+
+const biome = getBiome();
+
+const bg = x.createLinearGradient(0,0,0,550);
+
+if (biome === 0) {
+  bg.addColorStop(0, "#3fd6ff");
+  bg.addColorStop(1, "#003c73");
+}
+else if (biome === 1) {
+  bg.addColorStop(0, "#65f0d0");
+  bg.addColorStop(1, "#0b8f74");
+}
+else if (biome === 2) {
+  bg.addColorStop(0, "#223366");
+  bg.addColorStop(1, "#000814");
+}
+else if (biome === 3) {
+  bg.addColorStop(0, "#3b1f1f");
+  bg.addColorStop(1, "#000000");
+}
+else {
+  bg.addColorStop(0, "#090909");
+  bg.addColorStop(1, "#000000");
+}
+
+x.fillStyle = bg;
+x.fillRect(0,0,900,550);
+  x.fillStyle=bg;
+  x.fillRect(0,0,900,550);
+  
+
+  // 기존 거품 유지
+  bubbles.forEach(b=>{
+    b.y-=b.s;
+    if(b.y<-10){
+      b.y=560;
+      b.x=Math.random()*900;
+    }
+    x.strokeStyle="rgba(255,255,255,.3)";
+    x.beginPath();
+    x.arc(b.x,b.y,4+b.s,0,Math.PI*2);
+    x.stroke();
+  });
+
+  x.save();
+  x.translate(-cam,0);
+  if (biome === 2) {
+  crabs.forEach(c => {
+
+    x.fillStyle = "#ff4b4b";
+
+    x.beginPath();
+    x.arc(c.x, c.y, 16, 0, Math.PI * 2);
+    x.fill();
+
+    x.fillRect(c.x - 25, c.y, 15, 4);
+    x.fillRect(c.x + 10, c.y, 15, 4);
+
+    if (!gameOver &&
+        dist(p.x,p.y,c.x,c.y) < 50) {
+
+      p.hp--;
+      c.x += 1000;
+
+      if (p.hp <= 0)
+        gameOver = true;
+    }
+  });
+}
+if (biome === 4) {
+  squids.forEach(s => {
+
+    s.y += Math.sin(performance.now()/500 + s.x) * 0.5;
+
+    x.fillStyle = "#d483ff";
+
+    x.beginPath();
+    x.arc(s.x, s.y, 20, 0, Math.PI * 2);
+    x.fill();
+
+    for (let i = 0; i < 6; i++) {
+      x.fillRect(
+        s.x - 12 + i * 4,
+        s.y + 20,
+        2,
+        25
+      );
+    }
+
+    if (!gameOver &&
+        dist(p.x,p.y,s.x,s.y) < 55) {
+
+      p.hp--;
+
+      s.x += 1500;
+
+      if (p.hp <= 0)
+        gameOver = true;
+    }
+  });
+}
+
+  // 물고기 떼
+  school.forEach((f,i)=>{
+    x.save();
+    x.translate(f.x,f.y);
+
+    const a=i===0
+      ? Math.atan2(school[0].vy,school[0].vx||1)
+      : Math.atan2(f.vy,f.vx||1);
+
+    x.rotate(a);
+
+    const fg=x.createLinearGradient(-10,0,12,0);
+    fg.addColorStop(0,"#fff59d");
+    fg.addColorStop(1,"#ffcf4d");
+    x.fillStyle=fg;
+
+    x.beginPath();
+    x.ellipse(0,0,12,7,0,0,Math.PI*2);
+    x.fill();
+
+    x.beginPath();
+    x.moveTo(-12,0);
+    x.lineTo(-22,-6);
+    x.lineTo(-22,6);
+    x.closePath();
+    x.fill();
+
+    x.fillStyle="#222";
+    x.beginPath();
+    x.arc(5,-2,1.5,0,Math.PI*2);
+    x.fill();
+    x.restore();
+
+    if(!gameOver && dist(p.x,p.y,f.x,f.y)<55){
+      p.score+=10;
+      p.mouth+=6;
+
+      // 한 마리만 리스폰 → 떼 버벅임 제거
+      f.x = school[0].x + 900 + Math.random()*300;
+      f.y = 150 + Math.random()*250;
+      f.vx = 0;
+      f.vy = 0;
+    }
+  });
+
+  // 고퀄 해파리
+  jelly.forEach(j=>{
+    j.t += .04;
+    const jy = j.y + Math.sin(j.t)*25;
+
+    const jg = x.createRadialGradient(j.x,jy,5,j.x,jy,30);
+    jg.addColorStop(0,"rgba(255,220,255,.9)");
+    jg.addColorStop(1,"rgba(181,97,255,.95)");
+
+    x.fillStyle=jg;
+    x.beginPath();
+    x.arc(j.x,jy,22,Math.PI,0);
+    x.fill();
+
+    x.strokeStyle="rgba(233,190,255,.8)";
+    x.lineWidth=2;
+
+    for(let i=0;i<6;i++){
+      x.beginPath();
+      const ox = j.x-18+i*7;
+      x.moveTo(ox,jy);
+      x.quadraticCurveTo(
+        ox+Math.sin(performance.now()/300+i)*6,
+        jy+20,
+        ox,
+        jy+40
+      );
+      x.stroke();
+    }
+
+    if(!gameOver && dist(p.x,p.y,j.x,jy)<60){
+      p.hp--;
+      j.x = p.x + 1000 + Math.random()*600;
+      if(p.hp<=0) gameOver=true;
+    }
+  });
+
+  p.mouth*=0.9;
+  drawWhale(p.x,p.y,p.angle);
+
+  x.restore();
+
+  x.fillStyle="rgba(0,0,0,.3)";
+  x.fillRect(20,20,260,95);
+  x.fillStyle="#fff";
+  x.font="20px Arial";
+  x.fillText("SCORE : "+p.score,35,50);
+  x.fillText("HP : "+p.hp,35,80);
+  x.fillText("BOOST",35,108);
+  const biomeNames = [
+  "SHALLOW SEA",
+  "CORAL REEF",
+  "CAVE",
+  "VENT FIELD",
+  "ABYSS"
+];
+
+x.fillText(
+  "DIST : " +
+  Math.floor(distance) +
+  "m",
+  35,
+  140
+);
+
+x.fillText(
+  biomeNames[biome],
+  35,
+  170
+);
+
+  x.fillStyle="#6de8ff";
+  x.fillRect(120,93,p.boost,15);
+
+  if(gameOver){
+    x.fillStyle="rgba(0,0,0,.75)";
+    x.fillRect(0,0,900,550);
+    x.fillStyle="#fff";
+    x.textAlign="center";
+    x.font="bold 56px Arial";
+    x.fillText("GAME OVER",450,240);
+    x.font="24px Arial";
+    x.fillText("SCORE : "+p.score,450,300);
+    x.fillText("PRESS ENTER TO REPLAY",450,340);
+    x.textAlign="left";
+  }
+}
+loop();
+</script>
+</body>
+</html>

@@ -19,7 +19,11 @@ const items = await getCollection(
 );
 
 const projects = items
-  .filter((project) => project.id === 'retro-racer')
+  .filter(
+    (project) =>
+      project.id === 'retro-racer' ||
+      project.id === 'ocean-dash'
+  )
   .sort((a, b) => a.data.order - b.data.order);
 ---
 
