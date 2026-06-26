@@ -12,9 +12,18 @@ import { getCollection } from 'astro:content';
 import siteConfig from '@/config/site.config';
 
 const projectItems = await getCollection('projects');
+
+const homeProjectIds = ['ocean-dash', 'retro-racer'];
+
 const featuredProjects = projectItems
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 4);
+  .filter((project) =>
+    homeProjectIds.includes(project.id.replace(/\.mdx?$/, '')),
+  )
+  .sort(
+    (a, b) =>
+      homeProjectIds.indexOf(a.id.replace(/\.mdx?$/, '')) -
+      homeProjectIds.indexOf(b.id.replace(/\.mdx?$/, '')),
+  );
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => {
